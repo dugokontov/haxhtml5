@@ -18,12 +18,11 @@ const avaiableSpaceCombination = [
 
 export default class Circle extends Shape {
     constructor(ctx, position, radius, borderWidth, speed, mass, color, acceleration, deceleration) {
-        super(acceleration, deceleration);
+        super(speed, acceleration, deceleration);
         this.ctx = ctx;
         this.position = position;
         this.radius = radius;
         this.borderWidth = borderWidth;
-        this.speed = speed;
         this.mass = mass;
         this.color = color;
     }
@@ -107,10 +106,13 @@ export default class Circle extends Shape {
         }
     }
 
-    isIntersect(player) {
+    isIntersect(otherCircle) {
+        if (!(otherCircle instanceof Circle)) {
+            return false;
+        }
         const pos1 = this.position;
-        const pos2 = player.position;
-        const minDistance = this.radius + player.radius;
+        const pos2 = otherCircle.position;
+        const minDistance = this.radius + otherCircle.radius;
         if (Math.abs(pos1.x - pos2.x) > minDistance) {
             return false;
         }
@@ -145,14 +147,18 @@ export default class Circle extends Shape {
         }
     }
 
-    interact(otherCircle) {
-        if (!this.isInteract(otherCircle)) {
+    interact(element, boostMe = 0) {
+        if (!(element instanceof Circle)) {
+            return element.interact(this);
+        }
+
+        if (!this.isInteract(element)) {
             return false;
         }
         
         const pos1 = this.position;
-        const pos2 = otherCircle.position;
-        const minDistance = this.radius + otherCircle.radius + 1;
+        const pos2 = element.position;
+        const minDistance = this.radius + element.radius + 1;
 
         // theta is impact angle
         let theta = Math.asin(Math.abs(pos1.y - pos2.y) / minDistance);
@@ -161,30 +167,35 @@ export default class Circle extends Shape {
         }
 
         const circle1 = this.getImpactVectors(theta);
-        const circle2 = otherCircle.getImpactVectors(theta);
+        const circle2 = element.getImpactVectors(theta);
 
         const p1vxi = circle1.vxi;
         const p2vxi = circle2.vxi;
 
-        if (this.mass === otherCircle.mass) {
+        if (this.mass === element.mass) {
             circle1.vxi = p2vxi;
             circle2.vxi = p1vxi;
-        } else if (this.mass === Infinity || otherCircle.mass === Infinity) {
+        } else if (this.mass === Infinity || element.mass === Infinity) {
             if (this.mass === Infinity) {
                 circle2.vxi = -p2vxi;
             }
 
-            if (otherCircle.mass === Infinity) {
+            if (element.mass === Infinity) {
                 circle1.vxi = -p1vxi;
             }
         } else {
-            const vcm = ((this.mass * p1vxi) + (otherCircle.mass * p2vxi)) / (this.mass + otherCircle.mass);
+            const vcm = ((this.mass * p1vxi) + (element.mass * p2vxi)) / (this.mass + element.mass);
             circle1.vxi = 2 * vcm - p1vxi;
             circle2.vxi = 2 * vcm - p2vxi;
         }
 
+        if (boostMe) {
+            circle1.vxi += boostMe;
+            element.actions.delete('fire');
+        }
+
         this.setSpeedVector(circle1);
-        otherCircle.setSpeedVector(circle2);
+        element.setSpeedVector(circle2);
     }
 
     draw() {

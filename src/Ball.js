@@ -1,4 +1,5 @@
 import Circle from './Circle';
+import Player from './Player';
 
 const RADIUS = 10;
 const LINE_WIDTH = 3;
@@ -8,10 +9,10 @@ const DECELERATION = 0.015;
 const TOP_SPEED = 10;
 
 export default class Ball extends Circle {
-    constructor(ctx) {
+    constructor(ctx, position) {
         super(
             ctx,
-            { x: 50, y: -50 },
+            position,
             RADIUS,
             LINE_WIDTH,
             { x: 0, y: 0 },
@@ -28,5 +29,13 @@ export default class Ball extends Circle {
 
     decelerate () {
         super.decelerate(TOP_SPEED);
+    }
+
+    interact(element) {
+        let boostMe = 0;
+        if (element instanceof Player && element.actions.has('fire')) {
+            boostMe = 2;
+        }
+        super.interact(element, boostMe);
     }
 }

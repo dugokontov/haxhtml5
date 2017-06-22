@@ -1,6 +1,7 @@
 import Player from './Player';
 import Circle from './Circle';
 import Ball from './Ball';
+import Rectangle from './Rectangle';
 
 const objects = [];
 let currentPlayer, randomPlayer, ctx;
@@ -103,23 +104,38 @@ export default c => {
     ctx = c;
     // create first player
     currentPlayer = new Player(c, '#fedcba');
+    currentPlayer.position.x = 100;
+    currentPlayer.position.y = -200;
     objects.push(currentPlayer);
     // create second player
     randomPlayer = new Player(c, '#abcdef');
-    randomPlayer.position.x = 200;
+    randomPlayer.position.x = 500;
     randomPlayer.position.y = -200;
     objects.push(randomPlayer);
 
     // create posts
-    objects.push(new Circle(c, { x: 30, y: -250 }, 7, 3, { x: 0, y: 0 }, Infinity, '#acdcac', 0, 0));
-    objects.push(new Circle(c, { x: 30, y: -150 }, 7, 3, { x: 0, y: 0 }, Infinity, '#acdcac', 0, 0));
+    objects.push(new Circle(c, { x: 20, y: -250 }, 7, 3, { x: 0, y: 0 }, Infinity, '#acdcac', 0, 0));
+    objects.push(new Circle(c, { x: 20, y: -150 }, 7, 3, { x: 0, y: 0 }, Infinity, '#acdcac', 0, 0));
+
+    objects.push(new Circle(c, { x: 580, y: -250 }, 7, 3, { x: 0, y: 0 }, Infinity, '#acdcac', 0, 0));
+    objects.push(new Circle(c, { x: 580, y: -150 }, 7, 3, { x: 0, y: 0 }, Infinity, '#acdcac', 0, 0));
 
     // create ball
-    objects.push(new Ball(c));
-    
+    objects.push(new Ball(c, { x: 300, y: -200 }));
+
+    // create obstacles 
+    objects.push(new Rectangle(c, 5, -5, 595, 2, Infinity, 'black', 0, 0));
+    objects.push(new Rectangle(c, 5, -5, 2, 395, Infinity, 'black', 0, 0));
+    objects.push(new Rectangle(c, 5, -400, 595, 2, Infinity, 'black', 0, 0));
+    objects.push(new Rectangle(c, 600, -5, 2, 395, Infinity, 'black', 0, 0));
     
     document.addEventListener('keydown', keydown);
     document.addEventListener('keyup', keyup);
 
-    setInterval(render, 10);
+    const r = () => {
+        render();
+        setTimeout(r, 10);
+    }
+
+    r();
 };

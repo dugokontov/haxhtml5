@@ -10,8 +10,8 @@ class App extends Component {
     return (
       <canvas
         ref={ref => this.canvas = ref}
-        width="600"
-        height="400"
+        width="650"
+        height="450"
       />
     );
   }

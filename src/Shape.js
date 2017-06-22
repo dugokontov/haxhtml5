@@ -1,6 +1,7 @@
 export default class Shape {
-    constructor(acceleration, deceleration) {
+    constructor(speed, acceleration, deceleration) {
         this.actions = new Set();
+        this.speed = speed;
         this.acceleration = acceleration;
         this.deceleration = deceleration;
     }
@@ -50,6 +51,16 @@ export default class Shape {
     }
 
     decelerate (topSpeed) {
+        // decelerate if no move actions present
+        if (this.actions.size === 0 || (this.actions.size === 1 && this.actions.has('fire'))) {
+            const currentSpeed = Math.sqrt(this.speed.x ** 2 + this.speed.y ** 2);
+            if (currentSpeed === 0) {
+                return;
+            }
+            this.speed.x = (this.speed.x * (currentSpeed - this.deceleration)) / currentSpeed;
+            this.speed.y = (this.speed.y * (currentSpeed - this.deceleration)) / currentSpeed;
+            return;
+        }
         let decelerate = false;
         // decelerate if:
         // 1. over the top speed

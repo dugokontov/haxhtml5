@@ -1,4 +1,5 @@
 import Circle from './Circle';
+import Ball from './Ball';
 
 const LINE_WIDTH = 3;
 const ACCELERATION = 0.025;
@@ -20,5 +21,12 @@ export default class Player extends Circle {
     decelerate () {
         const topSpeed = this.actions.has('fire') ? TOP_SPEED / 2 : TOP_SPEED;
         super.decelerate(topSpeed);
+    }
+
+    interact(element) {
+        if (element instanceof Ball) {
+            return element.interact(this);
+        }
+        return super.interact(element);
     }
 }
