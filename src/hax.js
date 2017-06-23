@@ -2,9 +2,17 @@ import Player from './Player';
 import Circle from './Circle';
 import Ball from './Ball';
 import Rectangle from './Rectangle';
+import ScoreLine from './ScoreLine';
 
 const objects = [];
-let currentPlayer, randomPlayer, ctx;
+const players = [];
+let currentPlayer, randomPlayer, ctx, teamAScoreLine, teamBScoreLine, ball;
+let game = {
+    score: {
+        a: 0,
+        b: 0,
+    },
+};
 
 const render = () => {
     objects.forEach(p => {
@@ -19,7 +27,7 @@ const render = () => {
         }
     }
     
-    ctx.clearRect(0, 0, 600, 400);
+    ctx.clearRect(0, 0, 650, 450);
     objects.forEach(p => {
         p.move(objects);
         p.draw();
@@ -100,18 +108,60 @@ const keyup = event => {
     }
 }
 
+const displayScore = () => {
+    console.log(`A ${game.score.a} - ${game.score.b} B`);
+}
+
+const score = (team) => {
+    game.score[team] += 1;
+    teamAScoreLine.onScore = null;
+    teamBScoreLine.onScore = null;
+    setTimeout(positionMovables, 3000);
+    console.log('GOOOOOOAAAAAAALLLL!!!!!!!!!');
+    displayScore();
+}
+
+const positionMovables = () => {
+    const teamA = players.filter(p => p.team === 'a');
+    const teamB = players.filter(p => p.team === 'b');
+
+    teamA.forEach((player, index) => {
+        player.position.x = 100;
+        player.position.y = -200;
+
+        player.speed.x = 0;
+        player.speed.y = 0;
+    });
+
+    teamB.forEach((player, index) => {
+        player.position.x = 500;
+        player.position.y = -200;
+
+        player.speed.x = 0;
+        player.speed.y = 0;
+    });
+
+    ball.position.x = 300;
+    ball.position.y = -200;
+    ball.speed.x = 0;
+    ball.speed.y = 0;
+
+    teamAScoreLine.onScore = score;
+    teamBScoreLine.onScore = score;
+}
+
 export default c => {
     ctx = c;
     // create first player
     currentPlayer = new Player(c, '#fedcba');
-    currentPlayer.position.x = 100;
-    currentPlayer.position.y = -200;
+    currentPlayer.team = 'a';
     objects.push(currentPlayer);
+    players.push(currentPlayer);
     // create second player
     randomPlayer = new Player(c, '#abcdef');
-    randomPlayer.position.x = 500;
-    randomPlayer.position.y = -200;
+    randomPlayer.team = 'b';
     objects.push(randomPlayer);
+    players.push(randomPlayer);
 
     // create posts
     objects.push(new Circle(c, { x: 20, y: -250 }, 7, 3, { x: 0, y: 0 }, Infinity, '#acdcac', 0, 0));
@@ -121,13 +171,20 @@ export default c => {
     objects.push(new Circle(c, { x: 580, y: -150 }, 7, 3, { x: 0, y: 0 }, Infinity, '#acdcac', 0, 0));
 
     // create ball
-    objects.push(new Ball(c, { x: 300, y: -200 }));
+    ball = new Ball(c, { x: 300, y: -200 });
+    objects.push(ball);
 
     // create obstacles 
     objects.push(new Rectangle(c, 5, -5, 595, 2, Infinity, 'black', 0, 0));
     objects.push(new Rectangle(c, 5, -5, 2, 395, Infinity, 'black', 0, 0));
     objects.push(new Rectangle(c, 5, -400, 595, 2, Infinity, 'black', 0, 0));
     objects.push(new Rectangle(c, 600, -5, 2, 395, Infinity, 'black', 0, 0));
+
+    // add score lines
+    teamAScoreLine = new ScoreLine(c, 'b', 20, -150, 2, 100, 0, 'gray', 0, 0);
+    teamBScoreLine = new ScoreLine(c, 'a', 580, -150, 2, 100, 0, 'gray', 0, 0);
+
+    objects.push(teamAScoreLine, teamBScoreLine);
     
     document.addEventListener('keydown', keydown);
     document.addEventListener('keyup', keyup);
@@ -136,6 +193,9 @@ export default c => {
         render();
         setTimeout(r, 10);
     }
+
+    displayScore();
+    positionMovables();
 
     r();
 };
