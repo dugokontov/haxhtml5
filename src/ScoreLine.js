@@ -2,8 +2,29 @@ import Rectangle from './Rectangle';
 import Ball from './Ball';
 
 export default class ScoreLine extends Rectangle {
-    constructor(ctx, team, topLeftX, topLeftY, width, height, mass, color, acceleration, deceleration) {
-        super(ctx, topLeftX, topLeftY, width, height, mass, color, acceleration, deceleration);
+    constructor(
+        ctx,
+        team,
+        topLeftX,
+        topLeftY,
+        width,
+        height,
+        mass,
+        color,
+        acceleration,
+        deceleration
+    ) {
+        super(
+            ctx,
+            topLeftX,
+            topLeftY,
+            width,
+            height,
+            mass,
+            color,
+            acceleration,
+            deceleration
+        );
 
         this._onScore = null;
         this.team = team;

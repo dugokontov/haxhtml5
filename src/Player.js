@@ -10,7 +10,17 @@ const PLAYER_MASS = 10;
 
 export default class Player extends Circle {
     constructor(ctx, color) {
-        super(ctx, { x: 0, y: 0 }, RADIUS, LINE_WIDTH, { x: 0, y: 0 }, PLAYER_MASS, color, ACCELERATION, DECELERATION);
+        super(
+            ctx,
+            { x: 0, y: 0 },
+            RADIUS,
+            LINE_WIDTH,
+            { x: 0, y: 0 },
+            PLAYER_MASS,
+            color,
+            ACCELERATION,
+            DECELERATION
+        );
     }
 
     accelerate() {
@@ -18,7 +28,7 @@ export default class Player extends Circle {
         super.accelerate(topSpeed);
     }
 
-    decelerate () {
+    decelerate() {
         const topSpeed = this.actions.has('fire') ? TOP_SPEED / 2 : TOP_SPEED;
         super.decelerate(topSpeed);
     }
@@ -28,5 +38,23 @@ export default class Player extends Circle {
             return element.interact(this);
         }
         return super.interact(element);
+    }
+
+    store() {
+        return {
+            x: this.position.x,
+            y: this.position.y,
+            speedX: this.speed.x,
+            speedY: this.speed.y,
+            actions: Array.from(this.actions)
+        };
+    }
+
+    restore(obj) {
+        this.position.x = obj.x;
+        this.position.y = obj.y;
+        this.speed.x = obj.speedX;
+        this.speed.y = obj.speedY;
+        this.actions = new Set(obj.actions);
     }
 }

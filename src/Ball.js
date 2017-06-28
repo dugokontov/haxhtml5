@@ -19,7 +19,7 @@ export default class Ball extends Circle {
             BALL_MASS,
             'white',
             ACCELERATION,
-            DECELERATION,
+            DECELERATION
         );
     }
 
@@ -27,7 +27,7 @@ export default class Ball extends Circle {
         super.accelerate(TOP_SPEED);
     }
 
-    decelerate () {
+    decelerate() {
         super.decelerate(TOP_SPEED);
     }
 
@@ -37,5 +37,21 @@ export default class Ball extends Circle {
             boostMe = 2;
         }
         super.interact(element, boostMe);
+    }
+
+    store() {
+        return {
+            x: this.position.x,
+            y: this.position.y,
+            speedX: this.speed.x,
+            speedY: this.speed.y,
+        };
+    }
+
+    restore(obj) {
+        this.position.x = obj.x;
+        this.position.y = obj.y;
+        this.speed.x = obj.speedX;
+        this.speed.y = obj.speedY;
     }
 }

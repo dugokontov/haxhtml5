@@ -17,7 +17,17 @@ const avaiableSpaceCombination = [
 ];
 
 export default class Circle extends Shape {
-    constructor(ctx, position, radius, borderWidth, speed, mass, color, acceleration, deceleration) {
+    constructor(
+        ctx,
+        position,
+        radius,
+        borderWidth,
+        speed,
+        mass,
+        color,
+        acceleration,
+        deceleration
+    ) {
         super(speed, acceleration, deceleration);
         this.ctx = ctx;
         this.position = position;
@@ -37,23 +47,38 @@ export default class Circle extends Shape {
         if (Math.abs(pos1.y - pos2.y) > minDistance) {
             return false;
         }
-        if (Math.sqrt((pos1.x - pos2.x) ** 2 + (pos1.y - pos2.y) ** 2) > minDistance) {
+        if (
+            Math.sqrt((pos1.x - pos2.x) ** 2 + (pos1.y - pos2.y) ** 2) >
+            minDistance
+        ) {
             return false;
         }
 
-        if (this.speed.x !== 0 && Math.sign(this.speed.x) !== Math.sign(pos1.x - pos2.x)) {
+        if (
+            this.speed.x !== 0 &&
+            Math.sign(this.speed.x) !== Math.sign(pos1.x - pos2.x)
+        ) {
             return true;
         }
 
-        if (circle.speed.x !== 0 && Math.sign(circle.speed.x) !== Math.sign(pos2.x - pos1.x)) {
+        if (
+            circle.speed.x !== 0 &&
+            Math.sign(circle.speed.x) !== Math.sign(pos2.x - pos1.x)
+        ) {
             return true;
         }
 
-        if (this.speed.y !== 0 && Math.sign(this.speed.y) !== Math.sign(pos1.y - pos2.y)) {
+        if (
+            this.speed.y !== 0 &&
+            Math.sign(this.speed.y) !== Math.sign(pos1.y - pos2.y)
+        ) {
             return true;
         }
 
-        if (circle.speed.y !== 0 && Math.sign(circle.speed.y) !== Math.sign(pos2.y - pos1.y)) {
+        if (
+            circle.speed.y !== 0 &&
+            Math.sign(circle.speed.y) !== Math.sign(pos2.y - pos1.y)
+        ) {
             return true;
         }
 
@@ -119,7 +144,10 @@ export default class Circle extends Shape {
         if (Math.abs(pos1.y - pos2.y) > minDistance) {
             return false;
         }
-        if (Math.sqrt((pos1.x - pos2.x) ** 2 + (pos1.y - pos2.y) ** 2) > minDistance) {
+        if (
+            Math.sqrt((pos1.x - pos2.x) ** 2 + (pos1.y - pos2.y) ** 2) >
+            minDistance
+        ) {
             return false;
         }
 
@@ -135,12 +163,14 @@ export default class Circle extends Shape {
 
         do {
             const [xDiv, yDiv] = avaiableSpaceCombination[i];
-            this.position.x = currentX + (this.speed.x / xDiv);
-            this.position.y = currentY + (this.speed.y / yDiv);
-            hasInteraction = otherElements.some(e => e !== this && this.isIntersect(e));
+            this.position.x = currentX + this.speed.x / xDiv;
+            this.position.y = currentY + this.speed.y / yDiv;
+            hasInteraction = otherElements.some(
+                e => e !== this && this.isIntersect(e)
+            );
             i += 1;
-        } while (i < avaiableSpaceCombination.length && hasInteraction)
-        
+        } while (i < avaiableSpaceCombination.length && hasInteraction);
+
         if (hasInteraction) {
             this.position.x = currentX;
             this.position.y = currentY;
@@ -155,7 +185,7 @@ export default class Circle extends Shape {
         if (!this.isInteract(element)) {
             return false;
         }
-        
+
         const pos1 = this.position;
         const pos2 = element.position;
         const minDistance = this.radius + element.radius + 1;
@@ -184,13 +214,15 @@ export default class Circle extends Shape {
                 circle1.vxi = -p1vxi;
             }
         } else {
-            const vcm = ((this.mass * p1vxi) + (element.mass * p2vxi)) / (this.mass + element.mass);
+            const vcm =
+                (this.mass * p1vxi + element.mass * p2vxi) /
+                (this.mass + element.mass);
             circle1.vxi = 2 * vcm - p1vxi;
             circle2.vxi = 2 * vcm - p2vxi;
         }
 
         if (boostMe) {
-            circle1.vxi += boostMe;
+            circle1.vxi += boostMe * Math.sign(circle1.vxi);
             element.actions.delete('fire');
         }
 
@@ -207,7 +239,13 @@ export default class Circle extends Shape {
             this.ctx.strokeStyle = 'black';
         }
         this.ctx.fillStyle = this.color;
-        this.ctx.arc(this.position.x, -this.position.y, this.radius, 0, 2 * Math.PI);
+        this.ctx.arc(
+            this.position.x,
+            -this.position.y,
+            this.radius,
+            0,
+            2 * Math.PI
+        );
         this.ctx.stroke();
         this.ctx.fill();
     }

@@ -1,7 +1,17 @@
 import Shape from './Shape';
 
 export default class Rectangle extends Shape {
-    constructor(ctx, topLeftX, topLeftY, width, height, mass, color, acceleration, deceleration) {
+    constructor(
+        ctx,
+        topLeftX,
+        topLeftY,
+        width,
+        height,
+        mass,
+        color,
+        acceleration,
+        deceleration
+    ) {
         super({ x: 0, y: 0 }, acceleration, deceleration);
         this.ctx = ctx;
         this.topLeftX = topLeftX;
@@ -20,31 +30,35 @@ export default class Rectangle extends Shape {
         super.decelerate(0);
     }
 
-    isInteract(circle)  {
+    isInteract(circle) {
         // distance from center of circle and rectangle
-        const distX = Math.abs(circle.position.x - this.topLeftX - (this.width / 2));
-        const distY = Math.abs(-circle.position.y - -this.topLeftY - (this.height / 2));
+        const distX = Math.abs(
+            circle.position.x - this.topLeftX - this.width / 2
+        );
+        const distY = Math.abs(
+            -circle.position.y - -this.topLeftY - this.height / 2
+        );
 
-        if (distX > ((this.width / 2) + circle.radius + 1)) {
+        if (distX > this.width / 2 + circle.radius + 1) {
             return false;
         }
 
-        if (distY > ((this.height / 2) + circle.radius + 1)) {
+        if (distY > this.height / 2 + circle.radius + 1) {
             return false;
         }
 
-        if (distX <= (this.width / 2)) {
+        if (distX <= this.width / 2) {
             return true;
         }
 
-        if (distY <= (this.height / 2)) {
+        if (distY <= this.height / 2) {
             return true;
         }
-        
-        const dx = distX - (this.width / 2);
-        const dy = distY - (this.height / 2);
 
-        return (dx ** 2) + (dy ** 2) <= circle.radius ** 2;
+        const dx = distX - this.width / 2;
+        const dy = distY - this.height / 2;
+
+        return dx ** 2 + dy ** 2 <= circle.radius ** 2;
     }
 
     interact(circle) {
@@ -63,7 +77,7 @@ export default class Rectangle extends Shape {
             return;
         }
 
-        if (circle.position.y < (this.topLeftY - this.height)) {
+        if (circle.position.y < this.topLeftY - this.height) {
             if (circle.speed.y > 0) {
                 circle.speed.y = -circle.speed.y;
             }
@@ -87,12 +101,15 @@ export default class Rectangle extends Shape {
         return;
     }
 
-    move() {
-
-    }
+    move() {}
 
     draw() {
         this.ctx.fillStyle = this.color;
-        this.ctx.fillRect(this.topLeftX, -this.topLeftY, this.width, this.height);
+        this.ctx.fillRect(
+            this.topLeftX,
+            -this.topLeftY,
+            this.width,
+            this.height
+        );
     }
 }
