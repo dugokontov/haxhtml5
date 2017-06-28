@@ -29,7 +29,12 @@ const keydown = event => {
             timeline.registerAction(performance.now() - 50, 1, 'start', 'left');
             break;
         case 'd':
-            timeline.registerAction(performance.now() - 50, 1, 'start', 'right');
+            timeline.registerAction(
+                performance.now() - 50,
+                1,
+                'start',
+                'right'
+            );
             break;
         case 'x':
             timeline.registerAction(performance.now() - 50, 1, 'start', 'fire');

@@ -15,6 +15,6 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "prettier": "prettier --write --tab-width 4 --single-quote /src/**/*.js"
+    "prettier": "prettier --write --tab-width 4 --single-quote --trailing-comma es5 src/**/*.js"
   }
 }

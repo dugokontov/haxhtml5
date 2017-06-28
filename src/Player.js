@@ -46,7 +46,7 @@ export default class Player extends Circle {
             y: this.position.y,
             speedX: this.speed.x,
             speedY: this.speed.y,
-            actions: Array.from(this.actions)
+            actions: Array.from(this.actions),
         };
     }
 

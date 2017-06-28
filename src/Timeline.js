@@ -61,7 +61,9 @@ export default class Timeline {
             snapshotTime = snapshotTimes[indexOfFirstInvalidSnapshot - 1];
         }
 
-        const unappliedActions = this.actions.filter(a => a.when > snapshotTime);
+        const unappliedActions = this.actions.filter(
+            a => a.when > snapshotTime
+        );
 
         this.game.restoreState(this.snapShots[snapshotTime]);
         const actionsForThisFrame = a =>

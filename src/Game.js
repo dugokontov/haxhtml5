@@ -15,7 +15,7 @@ export default class Game {
 
         this.score = {
             a: 0,
-            b: 0
+            b: 0,
         };
     }
 
@@ -180,7 +180,7 @@ export default class Game {
         return {
             players: this.players.map(p => p.store()),
             ball: this.ball.store(),
-            score: Object.assign({}, this.score)
+            score: Object.assign({}, this.score),
         };
     }
 
