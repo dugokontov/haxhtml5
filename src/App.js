@@ -1,15 +1,29 @@
 import React, { Component } from 'react';
-import hax from './hax';
+import Looby from './components/Looby';
+import Room from './components/Room';
 
 class App extends Component {
-    componentDidMount() {
-        hax(this.canvas.getContext('2d'));
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            wsServer: undefined,
+            name: undefined,
+            roomId: undefined,
+        };
     }
 
+    onJoin = (wsServer, name, roomId) => {
+        this.setState({ wsServer, name, roomId });
+    };
+
     render() {
-        return (
-            <canvas ref={ref => (this.canvas = ref)} width="650" height="450" />
-        );
+        const { wsServer, name, roomId } = this.state;
+        if (wsServer) {
+            return <Room wsServer={wsServer} name={name} roomId={roomId} />;
+        }
+
+        return <Looby onJoin={this.onJoin} />;
     }
 }
 

@@ -5,13 +5,13 @@ import Rectangle from './Rectangle';
 import ScoreLine from './ScoreLine';
 
 export default class Game {
-    constructor(ctx) {
-        this.ctx = ctx;
+    constructor() {
         this.obsticles = [];
         this.players = [];
         this.teamAScoreLine = null;
         this.teamBScoreLine = null;
         this.ball = null;
+        this.onPlayerChange = null;
 
         this.score = {
             a: 0,
@@ -19,24 +19,27 @@ export default class Game {
         };
     }
 
+    getPlayers() {
+        return this.players;
+    }
+
     createFieldElements() {
         // create field
         this.obsticles.push(
-            new Rectangle(this.ctx, 5, -5, 595, 2, Infinity, 'black', 0, 0)
+            new Rectangle(5, -5, 595, 2, Infinity, 'black', 0, 0)
         );
         this.obsticles.push(
-            new Rectangle(this.ctx, 5, -5, 2, 395, Infinity, 'black', 0, 0)
+            new Rectangle(5, -5, 2, 395, Infinity, 'black', 0, 0)
         );
         this.obsticles.push(
-            new Rectangle(this.ctx, 5, -400, 595, 2, Infinity, 'black', 0, 0)
+            new Rectangle(5, -400, 595, 2, Infinity, 'black', 0, 0)
         );
         this.obsticles.push(
-            new Rectangle(this.ctx, 600, -5, 2, 395, Infinity, 'black', 0, 0)
+            new Rectangle(600, -5, 2, 395, Infinity, 'black', 0, 0)
         );
         // create posts
         this.obsticles.push(
             new Circle(
-                this.ctx,
                 { x: 20, y: -250 },
                 7,
                 3,
@@ -49,7 +52,6 @@ export default class Game {
         );
         this.obsticles.push(
             new Circle(
-                this.ctx,
                 { x: 20, y: -150 },
                 7,
                 3,
@@ -63,7 +65,6 @@ export default class Game {
 
         this.obsticles.push(
             new Circle(
-                this.ctx,
                 { x: 580, y: -250 },
                 7,
                 3,
@@ -76,7 +77,6 @@ export default class Game {
         );
         this.obsticles.push(
             new Circle(
-                this.ctx,
                 { x: 580, y: -150 },
                 7,
                 3,
@@ -90,7 +90,6 @@ export default class Game {
 
         // add score lines
         this.teamAScoreLine = new ScoreLine(
-            this.ctx,
             'b',
             20,
             -150,
@@ -102,7 +101,6 @@ export default class Game {
             0
         );
         this.teamBScoreLine = new ScoreLine(
-            this.ctx,
             'a',
             580,
             -150,
@@ -116,27 +114,13 @@ export default class Game {
 
         this.obsticles.push(this.teamAScoreLine, this.teamBScoreLine);
         // add ball
-        this.ball = new Ball(this.ctx, { x: 300, y: -200 });
-    }
-
-    addPlayers() {
-        let player;
-        // create first player
-        player = new Player(this.ctx, '#fedcba');
-        player.team = 'a';
-        player.id = this.players.length;
-        this.players.push(player);
-
-        // create second player
-        player = new Player(this.ctx, '#abcdef');
-        player.team = 'b';
-        player.id = this.players.length;
-        this.players.push(player);
+        this.ball = new Ball({ x: 300, y: -200 });
     }
 
     setInitPosition() {
         const teamA = this.players.filter(p => p.team === 'a');
         const teamB = this.players.filter(p => p.team === 'b');
+        const rest = this.players.filter(p => p.team == null);
 
         teamA.forEach((player, index) => {
             player.position.x = 100;
@@ -149,6 +133,14 @@ export default class Game {
         teamB.forEach((player, index) => {
             player.position.x = 500;
             player.position.y = -200;
+
+            player.speed.x = 0;
+            player.speed.y = 0;
+        });
+
+        rest.forEach(player => {
+            player.position.x = -10000;
+            player.position.y = -20000;
 
             player.speed.x = 0;
             player.speed.y = 0;
@@ -204,11 +196,32 @@ export default class Game {
 
     applyAction(action) {
         action.applied = true;
-        const player = this.players[action.player];
-        if (action.type === 'start') {
-            player.actions.add(action.action);
-        } else {
-            player.actions.delete(action.action);
+        let player = this.players.find(p => p.id === action.player);
+        switch (action.type) {
+            case 'join':
+                player = new Player('#fedcba');
+                player.id = action.player;
+                player.name = action.action;
+                this.players.push(player);
+                if (this.onPlayerChange) this.onPlayerChange();
+                break;
+            case 'game':
+                if (action.action === 'start') {
+                    this.setInitPosition();
+                }
+                break;
+            case 'start':
+                player.actions.add(action.action);
+                break;
+            case 'stop':
+                player.actions.delete(action.action);
+                break;
+            case 'change-team':
+                player.setTeam(action.action);
+                if (this.onPlayerChange) this.onPlayerChange();
+                break;
+            default:
+                throw new Error(`Unimplemented action type: ${action.type}`);
         }
     }
 
@@ -231,10 +244,10 @@ export default class Game {
         this.ball.move(objects);
     }
 
-    render() {
-        this.ctx.clearRect(0, 0, 650, 450);
-        this.obsticles.forEach(p => p.draw());
-        this.players.forEach(p => p.draw());
-        this.ball.draw();
+    render(ctx) {
+        ctx.clearRect(0, 0, 650, 450);
+        this.obsticles.forEach(p => p.draw(ctx));
+        this.players.forEach(p => p.draw(ctx));
+        this.ball.draw(ctx);
     }
 }

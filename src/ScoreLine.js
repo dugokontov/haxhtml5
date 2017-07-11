@@ -3,7 +3,6 @@ import Ball from './Ball';
 
 export default class ScoreLine extends Rectangle {
     constructor(
-        ctx,
         team,
         topLeftX,
         topLeftY,
@@ -15,7 +14,6 @@ export default class ScoreLine extends Rectangle {
         deceleration
     ) {
         super(
-            ctx,
             topLeftX,
             topLeftY,
             width,

@@ -9,9 +9,8 @@ const DECELERATION = 0.015;
 const TOP_SPEED = 10;
 
 export default class Ball extends Circle {
-    constructor(ctx, position) {
+    constructor(position) {
         super(
-            ctx,
             position,
             RADIUS,
             LINE_WIDTH,

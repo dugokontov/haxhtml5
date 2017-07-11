@@ -4,27 +4,31 @@ const INTERVAL = 10; // milliseconds
 const ACCEPTABLE_DELAY = 200;
 
 export default class Timeline {
-    constructor(ctx) {
+    constructor() {
         this.actions = actions([]);
-        this.game = new Game(ctx);
+        this.game = new Game();
         this.game.createFieldElements();
-        this.game.addPlayers();
-        this.game.setInitPosition();
-        this.game.displayScore();
 
-        this.lastSnapshotTime = performance.now();
+        this.lastSnapshotTime = 0;
         this.snapShots = {};
         this.snapShots[this.lastSnapshotTime] = this.game.storeState();
 
         this.handleApplyAction = this.game.applyAction.bind(this.game);
-
-        window.getSnapshot = () => console.log(this.snapShots);
-        window.gcOldSnapshots = this.gcOldSnapshots.bind(this);
     }
 
-    registerAction(when, player, type, action) {
-        const now = performance.now();
-        if (when <= now && when > now - ACCEPTABLE_DELAY) {
+    loadActions(actions) {
+        actions.forEach(({ when, player, type, action }) => {
+            this.actions.addAction(when, player, type, action);
+        });
+    }
+
+    registerAction({ when, player, type, action }, timeCorrection) {
+        if (timeCorrection === undefined) {
+            this.actions.addAction(when, player, type, action);
+            return;
+        }
+        const now = performance.now() + timeCorrection;
+        if (when <= now + ACCEPTABLE_DELAY && when > now - ACCEPTABLE_DELAY) {
             this.actions.addAction(when, player, type, action);
             console.log({ when, player, type, action });
         } else {
@@ -32,10 +36,38 @@ export default class Timeline {
         }
     }
 
-    render() {
+    getSafeSnapshot() {
+        const safeSnapshotTime = performance.now() - ACCEPTABLE_DELAY;
+        // find first snapshot before first action
+        const snapshotTimes = Object.keys(this.snapShots)
+            .map(time => +time)
+            .sort((a, b) => a - b);
+        let timeOfSafeSnapshot = snapshotTimes.find(
+            time => time > safeSnapshotTime
+        );
+        if (timeOfSafeSnapshot == null) {
+            timeOfSafeSnapshot = snapshotTimes
+                .reverse()
+                .find(time => time < safeSnapshotTime);
+        }
+        const snapshot = this.snapShots[timeOfSafeSnapshot];
+
+        // get all actions after safe snapshot
+        const actions = this.actions.filter(
+            action => action.when > timeOfSafeSnapshot
+        );
+
+        return { snapshot, actions };
+    }
+
+    getPlayers() {
+        return this.game.getPlayers();
+    }
+
+    render(ctx, timeCorrection) {
         // from when we have to render
         const firstUnappliedAction = this.actions.find(a => !a.applied);
-        const currentTime = performance.now();
+        const currentTime = performance.now() + timeCorrection;
         let snapshotTime;
         if (
             !firstUnappliedAction ||
@@ -87,19 +119,6 @@ export default class Timeline {
 
         this.lastSnapshotTime = snapshotTime;
         this.snapShots[this.lastSnapshotTime] = this.game.storeState();
-        this.game.render();
-    }
-
-    gcOldSnapshots() {
-        let currentTime = performance.now();
-        let numberOfDeleted = 0;
-        for (var index in this.snapShots) {
-            if (+index < currentTime - 5000) {
-                numberOfDeleted += 1;
-                delete this.snapShots[index];
-            }
-        }
-        window.getSnapshot();
-        console.log(`deleted ${numberOfDeleted} snapshots`);
+        this.game.render(ctx);
     }
 }

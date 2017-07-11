@@ -8,13 +8,14 @@
   },
   "devDependencies": {
     "prettier": "^1.5.2",
-    "react-scripts": "1.0.7"
+    "react-scripts": "1.0.7",
+    "ws": "^3.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "prettier": "prettier --write --tab-width 4 --single-quote --trailing-comma es5 src/**/*.js"
+    "prettier": "prettier --write --tab-width 4 --single-quote --trailing-comma es5 src/*.js src/**/*.js server.js"
   }
 }

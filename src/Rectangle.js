@@ -2,7 +2,6 @@ import Shape from './Shape';
 
 export default class Rectangle extends Shape {
     constructor(
-        ctx,
         topLeftX,
         topLeftY,
         width,
@@ -13,7 +12,6 @@ export default class Rectangle extends Shape {
         deceleration
     ) {
         super({ x: 0, y: 0 }, acceleration, deceleration);
-        this.ctx = ctx;
         this.topLeftX = topLeftX;
         this.topLeftY = topLeftY;
         this.width = width;
@@ -103,13 +101,8 @@ export default class Rectangle extends Shape {
 
     move() {}
 
-    draw() {
-        this.ctx.fillStyle = this.color;
-        this.ctx.fillRect(
-            this.topLeftX,
-            -this.topLeftY,
-            this.width,
-            this.height
-        );
+    draw(ctx) {
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.topLeftX, -this.topLeftY, this.width, this.height);
     }
 }

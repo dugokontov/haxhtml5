@@ -18,7 +18,6 @@ const avaiableSpaceCombination = [
 
 export default class Circle extends Shape {
     constructor(
-        ctx,
         position,
         radius,
         borderWidth,
@@ -29,7 +28,6 @@ export default class Circle extends Shape {
         deceleration
     ) {
         super(speed, acceleration, deceleration);
-        this.ctx = ctx;
         this.position = position;
         this.radius = radius;
         this.borderWidth = borderWidth;
@@ -230,23 +228,17 @@ export default class Circle extends Shape {
         element.setSpeedVector(circle2);
     }
 
-    draw() {
-        this.ctx.beginPath();
-        this.ctx.lineWidth = this.borderWidth;
+    draw(ctx) {
+        ctx.beginPath();
+        ctx.lineWidth = this.borderWidth;
         if (this.actions.has('fire')) {
-            this.ctx.strokeStyle = 'blue';
+            ctx.strokeStyle = 'blue';
         } else {
-            this.ctx.strokeStyle = 'black';
+            ctx.strokeStyle = 'black';
         }
-        this.ctx.fillStyle = this.color;
-        this.ctx.arc(
-            this.position.x,
-            -this.position.y,
-            this.radius,
-            0,
-            2 * Math.PI
-        );
-        this.ctx.stroke();
-        this.ctx.fill();
+        ctx.fillStyle = this.color;
+        ctx.arc(this.position.x, -this.position.y, this.radius, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.fill();
     }
 }

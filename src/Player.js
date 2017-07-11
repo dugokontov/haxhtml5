@@ -9,9 +9,8 @@ const RADIUS = 15;
 const PLAYER_MASS = 10;
 
 export default class Player extends Circle {
-    constructor(ctx, color) {
+    constructor(color) {
         super(
-            ctx,
             { x: 0, y: 0 },
             RADIUS,
             LINE_WIDTH,
@@ -34,6 +33,9 @@ export default class Player extends Circle {
     }
 
     interact(element) {
+        if (!this.team) {
+            return false;
+        }
         if (element instanceof Ball) {
             return element.interact(this);
         }
@@ -47,7 +49,19 @@ export default class Player extends Circle {
             speedX: this.speed.x,
             speedY: this.speed.y,
             actions: Array.from(this.actions),
+            team: this.team,
         };
+    }
+
+    setTeam(team) {
+        this.team = team;
+        if (this.team) {
+            if (team === 'a') {
+                this.color = 'red';
+            } else {
+                this.color = 'blue';
+            }
+        }
     }
 
     restore(obj) {
@@ -56,5 +70,13 @@ export default class Player extends Circle {
         this.speed.x = obj.speedX;
         this.speed.y = obj.speedY;
         this.actions = new Set(obj.actions);
+        this.setTeam(obj.team);
+    }
+
+    draw(ctx) {
+        if (!this.team) {
+            return;
+        }
+        super.draw(ctx);
     }
 }
